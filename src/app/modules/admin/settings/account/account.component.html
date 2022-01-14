@@ -1,0 +1,334 @@
+<div class="w-full">
+
+    <!-- Form -->
+    <form [formGroup]="accountForm">
+
+        <!-- Section -->
+        <div class="w-full">
+            <div class="text-xl"><mat-icon class="mt-2" >account_circle</mat-icon> Mis Datos Personales</div>
+        </div>
+        <div class="grid sm:grid-cols-9 gap-6 w-full mt-8">
+                        <!-- Company -->
+                        <div class="sm:col-span-3">
+                            <mat-form-field class="fuse-mat-no-subscript w-full" appearance="fill">
+                                <mat-label>Tipo de Documento</mat-label>
+                                <mat-select>
+                        <mat-option *ngFor="let item of tipodocumentos" [value]="item.CodigoValor">{{item.Descripcion}}</mat-option>
+                            </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="sm:col-span-3">
+                            <mat-form-field class="fuse-mat-no-subscript w-full">
+                                <mat-label>Nro Documento</mat-label>
+                                <input
+                                    [formControlName]="'name'"
+                                    matInput>
+                            </mat-form-field>
+                        </div>
+                        <!-- Username -->
+                        <div class="sm:col-span-3">
+                            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+                                <mat-label>RUC</mat-label>
+                                <input
+                                    [formControlName]="'username'"
+                                    matInput>
+                            </mat-form-field>
+                        </div>
+            <!-- Name -->
+            <div class="sm:col-span-3">
+                <mat-form-field class="fuse-mat-no-subscript w-full">
+                    <mat-label>Nombres</mat-label>
+                    <input
+                        [formControlName]="'name'"
+                        matInput>
+                </mat-form-field>
+            </div>
+            <!-- Username -->
+            <div class="sm:col-span-3">
+                <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+                    <mat-label>Apellido Paterno</mat-label>
+                    <input
+                        [formControlName]="'username'"
+                        matInput>
+                </mat-form-field>
+            </div>
+            <!-- Title -->
+            <div class="sm:col-span-3">
+                <mat-form-field class="fuse-mat-no-subscript w-full">
+                    <mat-label>Apellido Materno</mat-label>
+                    <input
+                        [formControlName]="'title'"
+                        matInput>
+                </mat-form-field>
+            </div>
+        </div>
+
+        <div class="grid sm:grid-cols-12 gap-6 w-full mt-8">
+            <!-- Company -->
+            <div class="sm:col-span-3">
+                <mat-form-field class="fuse-mat-no-subscript w-full">
+                    <mat-label>Pais de Nacimiento</mat-label>
+                    <mat-select >
+                    <mat-option *ngFor="let item of pais" [value]="item.cUbigeoCod">{{item.cUbigeoDesc}}</mat-option>
+                </mat-select>
+                </mat-form-field>
+            </div>
+            <!-- Username -->
+            <div class="sm:col-span-3">
+                <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+                    <mat-label>Departamento de Nacimiento</mat-label>
+                    <mat-select (selectionChange)="listarProvinciasNacimiento($event.value)" >
+                        <mat-option *ngFor="let item of departamentonacimiento" [value]="item.cUbigeoCod">{{item.cUbigeoDesc}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <!-- Name -->
+            <div class="sm:col-span-3">
+                <mat-form-field class="fuse-mat-no-subscript w-full">
+                    <mat-label>Provincia de Nacimiento</mat-label>
+                    <mat-select (selectionChange)="listarDistritosNacimiento($event.value)">
+                        <mat-option *ngFor="let item of provincianacimiento" [value]="item.cUbigeoCod">{{item.cUbigeoDesc}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <!-- Username -->
+            <div class="sm:col-span-3">
+                <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+                    <mat-label>Distrito de Nacimiento</mat-label>
+                    <mat-select>
+                        <mat-option *ngFor="let item of distritonacimiento" [value]="item.cUbigeoCod">{{item.cUbigeoDesc}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            </div>
+
+            <div class="grid sm:grid-cols-11 gap-6 w-full mt-8">
+            <div class="sm:col-span-2">
+                <mat-form-field class="fuse-mat-no-subscript w-full">
+                    <mat-label>Fecha de Nacimiento</mat-label>
+                    <input autocomplete="off" tabindex="9" required upperCase matTooltip="Fecha de nacimiento."
+                                readonly matInput formControlName="dFechaNacimiento"  [matDatepicker]="dFechaNacimiento">
+                    <mat-datepicker-toggle matSuffix [for]="dFechaNacimiento"></mat-datepicker-toggle>
+                    <mat-datepicker #dFechaNacimiento></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <!-- Username -->
+            <div class="sm:col-span-3">
+                <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+                    <mat-label>Ocupación</mat-label>
+                    <mat-select (selectionChange)="listarProvinciasNacimiento($event.value)" >
+                        <mat-option *ngFor="let item of ocupaciones" [value]="item.nCodigo">{{item.cDescripcion}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <!-- Name -->
+            <div class="sm:col-span-3">
+                <mat-form-field class="fuse-mat-no-subscript w-full">
+                    <mat-label>Actividad Económica CIIU</mat-label>
+                    <mat-select (selectionChange)="listarDistritosNacimiento($event.value)">
+                        <mat-option *ngFor="let item of actividadeconomica" [value]="item.CodigoCIIU">{{item.Descripcion}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <!-- Username -->
+            <div class="sm:col-span-3">
+                <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+                    <mat-label>Rubro</mat-label>
+                    <mat-select multiple>
+                        <mat-option *ngFor="let item of rubros" [value]="item.nConsValor">{{item.cConsDescripcion}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+
+        <div class="grid sm:grid-cols-12 gap-6 w-full mt-8">
+            <div class="sm:col-span-3">
+                <mat-form-field class="w-full" appearance="fill">
+                    <mat-label>Teléfono movil</mat-label>
+                    <input #nCelular DigitEnerotNumber id="nCelular"  type="text" matInput placeholder=""
+                        formControlName="nCelular" placeholder="+51">
+                    <mat-icon matSuffix>phone</mat-icon>
+                    <mat-hint style="text-align: end;" align="end">{{nCelular.value.length}} /9
+                    </mat-hint>
+                </mat-form-field>
+            </div>
+            <!-- Username -->
+            <div class="sm:col-span-3">
+                <mat-form-field class="w-full" appearance="fill">
+                <mat-label>Teléfono fijo</mat-label>
+                            <input #nTelFijo DigitEnerotNumber id="nTelFijo" type="text" matInput placeholder=""
+                                formControlName="nTelFijo" placeholder="+51">
+                            <mat-icon matSuffix>phone</mat-icon>
+                            <mat-hint style="text-align: end;" align="end">{{nTelFijo.value.length}} /9
+                            </mat-hint>
+                </mat-form-field>
+            </div>
+            <!-- Name -->
+            <div class="sm:col-span-3">
+                <mat-form-field class="w-full" appearance="fill">
+                    <mat-label>Correo</mat-label>
+                    <input required matInput type="email" id="email" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-zA-Z]{2,4}"
+                        placeholder="" [formControlName]="'cCorreo'">
+                </mat-form-field>
+            </div>
+            <!-- Username -->
+            <div class="sm:col-span-3">
+                <mat-form-field class="w-full" appearance="fill">
+                    <mat-label>Lugar Constitucion</mat-label>
+                    <mat-select required [formControlName]="'cLugarConstitucion'">
+                        <mat-option *ngFor="let item of pais" [value]="item.cUbigeoCod">{{item.cUbigeoDesc}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="my-10 border-t"></div>
+
+        <!-- Section -->
+        <div class="w-full">
+            <div class="text-xl"><mat-icon class="mt-2" >home</mat-icon> Datos de Ubicación</div>
+        </div>
+
+        <div class="grid xl:grid-cols-4 lg:grid-cols-4 md:grid-cols-4 sm:grid-cols-6 grid-cols-6 gap-2 mt-8">
+            <div class="xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-3 col-span-3">
+                <mat-form-field class="w-full" appearance="fill">
+                    <mat-label>Departamento</mat-label>
+                    <mat-select required [formControlName]="'cDepartamento'"  (selectionChange)="listarProvincias($event.value)">
+                        <mat-option *ngFor="let item of departamentos" [value]="item.cUbigeoCod">{{item.cUbigeoDesc}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-3 col-span-3">
+                <mat-form-field class="w-full" appearance="fill">
+                    <mat-label>Provincia</mat-label>
+                    <mat-select required [formControlName]="'cProvincia'" (selectionChange)="listarDistritos($event.value)" >
+                        <mat-option *ngFor="let item of provincias" [value]="item.cUbigeoCod">{{item.cUbigeoDesc}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-3 col-span-3">
+                <mat-form-field class="w-full" appearance="fill">
+                    <mat-label>Distrito</mat-label>
+                    <mat-select required [formControlName]="'cDistrito'" (selectionChange)="listarZonas($event.value)">
+                        <mat-option *ngFor="let item of distritos" [value]="item.cUbigeoCod">{{item.cUbigeoDesc}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-3 col-span-3">
+                <mat-form-field class="w-full" appearance="fill">
+                    <mat-label>Zona</mat-label>
+                    <mat-select  required [formControlName]="'cZona'">
+                        <mat-option *ngFor="let item of zonas" [value]="item.cUbigeoCod">{{item.cUbigeoDesc}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            </div>
+
+            <div class="grid xl:grid-cols-6 lg:grid-cols-6 md:grid-cols-6 sm:grid-cols-6 grid-cols-6 gap-2">
+                <div class="xl:col-span-2 lg:col-span-2 md:col-span-2 sm:col-span-2 col-span-2">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Tipo de vía</mat-label>
+                        <mat-select [formControlName]="'cTipoVia'">
+                            <mat-option *ngFor="let item of vias" [value]="item.CodigoValor">{{item.Descripcion}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="xl:col-span-4 lg:col-span-4 md:col-span-4 sm:col-span-4 col-span-4">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Descripción de vía</mat-label>
+                        <input matInput placeholder="" [formControlName]='"cDescripcionVia"'>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="grid xl:grid-cols-8 lg:grid-cols-8 md:grid-cols-8 sm:grid-cols-8 gap-2">
+                <div class="xl:col-span-2 lg:col-span-2 md:col-span-4 sm:col-span-4">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Tipo de zona</mat-label>
+                        <mat-select [formControlName]="'cTipoZona'">
+                            <mat-option *ngFor="let item of tipozonas" [value]="item.CodigoValor">{{item.Descripcion}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="xl:col-span-2 lg:col-span-2  md:col-span-4 sm:col-span-4">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Descripción de zona</mat-label>
+                        <input matInput placeholder="" [formControlName]='"cDescripcionZona"'>
+                    </mat-form-field>
+                </div>
+                <div class="xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-2">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Manzana</mat-label>
+                        <input matInput placeholder="" formControlName="cManzana">
+                    </mat-form-field>
+                </div>
+                <div class="xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-2">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Lote</mat-label>
+                        <input matInput placeholder="" formControlName="cLote">
+                    </mat-form-field>
+                </div>
+                <div class="xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-2">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Etapa</mat-label>
+                        <input matInput placeholder="" formControlName="cEtapa">
+                    </mat-form-field>
+                </div>
+                <div class="xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-2">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Nro</mat-label>
+                        <input DigitEnerotNumber matInput placeholder="" formControlName="cNro">
+                    </mat-form-field>
+                </div>
+                </div>
+                <div class="grid grid-cols-6 xl:grid-cols-12 lg:grid-cols-12 md:grid-cols-10 sm:grid-cols-10 gap-2">
+                <div class="xl:col-span-2 lg:col-span-2 md:col-span-2 sm:col-span-2 col-span-2">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Interior</mat-label>
+                        <mat-select [formControlName]="'cTipoInterior'">
+                            <mat-option *ngFor="let item of interior" [value]="item.CodigoValor">{{item.Descripcion}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="xl:col-span-4 lg:col-span-4 md:col-span-3 sm:col-span-3 col-span-4">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Descripción del Interior</mat-label>
+                        <input matInput placeholder="" formControlName="cDescripcionInterior">
+                    </mat-form-field>
+                </div>
+                <div class="xl:col-span-2 lg:col-span-2 md:col-span-2 sm:col-span-2 col-span-2">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Bloque</mat-label>
+                        <mat-select [formControlName]="'cTipoBloque'">
+                            <mat-option *ngFor="let item of bloque" [value]="item.CodigoValor">{{item.Descripcion}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="xl:col-span-4 lg:col-span-4 md:col-span-3 sm:col-span-3 col-span-4">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Descripción del Bloque</mat-label>
+                        <input matInput placeholder="" formControlName="cDescripcionBloque">
+                    </mat-form-field>
+                </div>
+            </div>
+
+        <!-- Divider -->
+        <div class="mt-11 mb-10 border-t"></div>
+
+        <!-- Actions -->
+        <div class="flex items-center justify-end">
+            <button
+                mat-stroked-button
+                type="button">
+                Cancel
+            </button>
+            <button
+                class="ml-4"
+                mat-flat-button
+                type="button"
+                [color]="'primary'">Save
+            </button>
+        </div>
+    </form>
+
+</div>

@@ -1,0 +1,622 @@
+<div class="container w-full">
+    <mat-card>
+        <mat-card-title id="title">{{nombre}}</mat-card-title>
+        <mat-stepper orientation="vertical" #stepper >
+            <mat-step *ngFor="let item of procetapa; let contador = index" [stepControl]="firstFormGroup">
+                <ng-template matStepLabel>{{item.NombreEtapaConfigProcesoSeleccion}}</ng-template>
+                <div class="grid sm:grid-cols-12 gap-6 w-full mt-5">
+                <div *ngIf="item.CodigoEtapaConfigProcesoSeleccion===1" class="mt-0.5 font-medium grid col-span-12">
+                    <p>Bienvenido(a):</p>
+                    <p class="mt-0.5">Te invitamos a participar en el presente proceso de selección, para ello revisa la siguiente información
+                        previo al registro de tu inscripción:
+                    </p>
+                    <p class="mt-2">
+                        <b>PROCESO:</b>{{procnombre}}
+                    </p>
+                    <p class="mt-2">
+                        <b>RUBRO (S):</b>{{procrubro}}
+                    </p>
+                </div>
+                </div>
+                <form class="grid sm:col-span-6" [formGroup]="firstFormGroup">
+                <div *ngIf="(item.CodigoEtapaConfigProcesoSeleccion===3 && nnivel==='1')||(item.CodigoEtapaConfigProcesoSeleccion===6 && nnivel==='2') " class="grid sm:grid-cols-12 gap-6 w-full mt-1">
+                    <div class="col-span-3">
+                    <mat-form-field class="fuse-mat-no-subscript w-full mt-5">
+                        <mat-label>Monto Propuesto Total</mat-label>
+                        <input matInput  formControlName="nMontoCotizacion">
+                    </mat-form-field>
+                    </div>
+                    <div class="col-span-3">
+                        <mat-form-field class="fuse-mat-no-subscript w-full mt-5">
+                            <mat-label>Moneda</mat-label>
+                            <mat-select
+                            [formControlName]="'nCodMoneda'">
+                            <mat-option *ngFor="let item of tipomoneda " [value]="item.CodigoValor">{{item.Descripcion}}</mat-option>
+                        </mat-select>
+                        </mat-form-field>
+                        </div>
+                </div>
+            </form>
+            <form class="grid sm:col-span-6" [formGroup]="firstFormGroup">
+        <div *ngIf="item.CodigoEtapaConfigProcesoSeleccion===4 && bBuenaPro===true" class="grid sm:grid-cols-12 gap-6 w-full mt-1">
+        <div class="col-span-1">
+            <P><B>Estado:</B></P>
+        </div>
+        <div style="margin-top: -30px" class="col-span-3">
+            <mat-form-field >
+            <input readonly matInput formControlName="cDescEstado">
+        </mat-form-field>
+         </div>
+        </div>
+        </form>
+                <mat-card-header *ngIf="" id="header" class="mt-4">Documentos</mat-card-header>
+                <div *ngIf="item.CodigoEtapaConfigProcesoSeleccion===1" class="grid sm:grid-cols-12 gap-6 w-full mt-5">
+                <div class="table sm:col-span-6">
+                            <table class="w-full" mat-table [dataSource]="dataSource3" matSort>
+                                <ng-container matColumnDef="tipodoc">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Tipo doc.</th>
+                                    <td mat-cell *matCellDef="let element"> {{element.cTipoDoc}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="descripcion">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Descripción
+                                    </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.cDescripcionDoc}}
+                                    </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="ver">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Ver </th>
+                                    <td mat-cell *matCellDef="let element; let i= index">
+                                        <button type="button" (click)="downloadFile(element)" mat-icon-button color="warm">
+                                            <mat-icon>book</mat-icon>
+                                        </button>
+                                    </td>
+                                </ng-container>
+                                <tr mat-header-row *matHeaderRowDef="displayedColumns3"></tr>
+                                <tr mat-row *matRowDef="let row; columns: displayedColumns3;"></tr>
+                            </table>
+                 </div>
+                 </div>
+                 <form [formGroup]="firstFormGroup">
+                 <div *ngIf="(item.CodigoEtapaConfigProcesoSeleccion!==1 && nnivel==='1') || (nnivel==='2' &&(item.CodigoEtapaConfigProcesoSeleccion===2)||(item.CodigoEtapaConfigProcesoSeleccion===6) )" class="grid sm:grid-cols-12 gap-6 w-full mt-5">
+                            <div class="col-span-4" *ngIf="bBuenaPro===false">
+                                <mat-form-field class="w-full" appearance="outline">
+                                    <mat-label>Tipo de Documento</mat-label>
+                                    <mat-select
+                                        formControlName="nTipoDocumento">
+                                        <mat-option *ngFor="let item2 of tipodoc " [value]="item2.nConsValor">{{item2.cConsDescripcion}}</mat-option>
+                                    </mat-select>
+                                  <!--   <mat-error *ngIf="secondFormGroup.get('cTipoDoc').hasError('required')">
+                                       El tipo de documento es <b>requerido</b>.
+                                    </mat-error> -->
+                                </mat-form-field>
+                            </div>
+                            <div class="col-span-4" *ngIf="bBuenaPro===false">
+                                <mat-form-field class="w-full" appearance="outline">
+                                    <mat-label>Descripcion</mat-label>
+                                    <input #cDescripcion  id="cDescripcion"
+                                        type="text" matInput placeholder="" formControlName="cDescripcionDoc">
+                                    <!-- <mat-error *ngIf="thirdFormGroup.get('cDescripcion').hasError('required')">
+                                        La descripción del documento es <b>requerida</b>.
+                                    </mat-error> -->
+                                </mat-form-field>
+                            </div>
+                            <div *ngIf="bBuenaPro===false" class="form-column lg:col-span-3" fxLayout="column"
+                            fxLayout.md="row" fxLayout.lg="row" fxLayout.lt.xl="row" fxLayoutGap="15px">
+                            <mat-form-field class="columns" appearance="outline">
+                              <mat-label >{{fileName}}
+                              </mat-label>
+                              <ng-template #newFile>
+                                <mat-label>Adjuntar archivo</mat-label>
+                              </ng-template>
+                              <input matInput readonly disabled />
+                              <button type="button" mat-icon-button matSuffix (click)="fileInput.click()">
+                                <mat-icon>attach_file</mat-icon>
+                              </button>
+                              <input formControlName="archivo" hidden (change)="selectFiles($event)" #fileInput type="file" id="file"
+                                accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+                                <!-- <mat-error *ngIf="secondFormGroup.get('archivo').hasError('required')">
+                                    Porfavor subir un archivo ya que es <b>requerido</b>.
+                                </mat-error> -->
+                            </mat-form-field>
+                          </div>
+                          <div *ngIf="bBuenaPro===false" class="xl:col-span-1 lg:col-span-1 md:col-span-1 sm:col-span-1 col-span-1 d-flex justify-center align-center">
+                            <button [disabled]="firstFormGroup.invalid" (click)="agregardoc(firstFormGroup)"  mat-icon-button color="warn" class="mt-5" type="button">
+                                <mat-icon>add</mat-icon>
+                            </button>
+                        </div>
+                        <div *ngIf="item.CodigoEtapaConfigProcesoSeleccion===2" class="table sm:col-span-6">
+                            <table class="w-full" mat-table [dataSource]="dataSource4" matSort>
+
+                                <ng-container matColumnDef="tipodoc">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Tipo doc.</th>
+                                    <td mat-cell *matCellDef="let element">
+                                        <span *ngFor="let item of tipodoc">
+                                          <span *ngIf="item.nConsValor === element.nTipoDocumento">  {{item.cConsDescripcion}}</span>
+                                        </span>
+                                         </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="descripcion">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Descripción
+                                    </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.cDescripcionDoc}}
+                                    </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="ver">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Ver </th>
+                                    <td mat-cell *matCellDef="let element; let i= index">
+                                        <button type="button" (click)="descargar(element.bContenido)" mat-icon-button color="warm">
+                                            <mat-icon>book</mat-icon>
+                                        </button>
+                                    </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="opciones">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Opciones </th>
+                                    <td mat-cell *matCellDef="let element; let i= index">
+                                        <button type="button" (click)="deletedocument(i)" mat-icon-button color="warm">
+                                            <mat-icon>delete</mat-icon>
+                                        </button>
+                                    </td>
+                                </ng-container>
+                                <tr mat-header-row *matHeaderRowDef="displayedColumnsDocumentosAdjuntos"></tr>
+                                <tr mat-row *matRowDef="let row; columns: displayedColumnsDocumentosAdjuntos;"></tr>
+                            </table>
+                    </div>
+                    <div *ngIf="(item.CodigoEtapaConfigProcesoSeleccion===3 && nnivel==='1')||(item.CodigoEtapaConfigProcesoSeleccion===6 && nnivel==='2')" class="table sm:col-span-6">
+                        <table class="w-full" mat-table [dataSource]="dataSource5" matSort>
+
+                            <ng-container matColumnDef="tipodoc">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header> Tipo doc.</th>
+                                <td mat-cell *matCellDef="let element">
+                                    <span *ngFor="let item of tipodoc">
+                                        <span *ngIf="item.nConsValor === element.nTipoDocumento">  {{item.cConsDescripcion}}</span>
+                                      </span>
+                                </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="descripcion">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header> Descripción
+                                </th>
+                                <td mat-cell *matCellDef="let element"> {{element.cDescripcionDoc}}
+                                </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="ver">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header> Ver </th>
+                                <td mat-cell *matCellDef="let element; let i= index">
+                                    <button type="button" (click)="descargar(element.bContenido)" mat-icon-button color="warm">
+                                        <mat-icon>book</mat-icon>
+                                    </button>
+                                </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="opciones">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header> Opciones </th>
+                                <td mat-cell *matCellDef="let element; let i= index">
+                                    <button type="button" (click)="deletedocument(i)" mat-icon-button color="warm">
+                                        <mat-icon>delete</mat-icon>
+                                    </button>
+                                </td>
+                            </ng-container>
+                            <tr mat-header-row *matHeaderRowDef="displayedColumnsDocumentosAdjuntos"></tr>
+                            <tr mat-row *matRowDef="let row; columns: displayedColumnsDocumentosAdjuntos;"></tr>
+                        </table>
+                </div>
+                <div *ngIf="item.CodigoEtapaConfigProcesoSeleccion===5" class="table sm:col-span-6">
+                    <table class="w-full" mat-table [dataSource]="dataSourceBasesIntegradas" matSort>
+
+                        <ng-container matColumnDef="tipodoc">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Tipo doc.</th>
+                            <td mat-cell *matCellDef="let element"> {{element.nTipoDocumento}} </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="descripcion">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Descripción
+                            </th>
+                            <td mat-cell *matCellDef="let element"> {{element.cDescripcionDoc}}
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="ver">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Ver </th>
+                            <td mat-cell *matCellDef="let element; let i= index">
+                                <button type="button" (click)="descargar(element.bContenido)" mat-icon-button color="warm">
+                                    <mat-icon>book</mat-icon>
+                                </button>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="opciones">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Opciones </th>
+                            <td mat-cell *matCellDef="let element; let i= index">
+                                <button type="button" (click)="deletedocument(i)" mat-icon-button color="warm">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </td>
+                        </ng-container>
+                        <tr mat-header-row *matHeaderRowDef="displayedColumnsDocumentosAdjuntos"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumnsDocumentosAdjuntos;"></tr>
+                    </table>
+            </div>
+                <div *ngIf="item.CodigoEtapaConfigProcesoSeleccion===4" class="table sm:col-span-6">
+                    <table class="w-full" mat-table [dataSource]="dataSource6" matSort>
+
+                        <ng-container matColumnDef="tipodoc">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Tipo doc.</th>
+                            <td mat-cell *matCellDef="let element"> {{element.nTipoDocumento}} </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="descripcion">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Descripción
+                            </th>
+                            <td mat-cell *matCellDef="let element"> {{element.cDescripcionDoc}}
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="ver">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Ver </th>
+                            <td mat-cell *matCellDef="let element; let i= index">
+                                <button type="button" (click)="descargar(element.bContenido)" mat-icon-button color="warm">
+                                    <mat-icon>book</mat-icon>
+                                </button>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="opciones">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Opciones </th>
+                            <td mat-cell *matCellDef="let element; let i= index">
+                                <button type="button" (click)="deletedocument(i)" mat-icon-button color="warm">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </td>
+                        </ng-container>
+                        <tr mat-header-row *matHeaderRowDef="displayedColumnsDocumentosAdjuntos"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumnsDocumentosAdjuntos;"></tr>
+                    </table>
+                </div>
+                </div>
+                <div class="grid sm:grid-cols-12 gap-6 w-full mt-5">
+           <div *ngIf="item.CodigoEtapaConfigProcesoSeleccion===5 && nnivel==='2'" class="table sm:col-span-6">
+            <table class="w-full" mat-table [dataSource]="dataSourceBasesIntegradas" matSort>
+
+                <ng-container matColumnDef="tipodoc">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Tipo doc.</th>
+                    <td mat-cell *matCellDef="let element">
+                         <span *ngFor="let item of tipodoc">
+                        <span *ngIf="item.nConsValor === element.nTipoDocumento">
+                             {{item.cConsDescripcion}}</span>
+                      </span> </td>
+                </ng-container>
+
+                <ng-container matColumnDef="descripcion">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Descripción
+                    </th>
+                    <td mat-cell *matCellDef="let element"> {{element.cDescripcionDoc}}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="ver">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Ver </th>
+                    <td mat-cell *matCellDef="let element; let i= index">
+                        <button type="button" (click)="descargar(element.bContenido)" mat-icon-button color="warm">
+                            <mat-icon>book</mat-icon>
+                        </button>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="opciones">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Opciones </th>
+                    <td mat-cell *matCellDef="let element; let i= index">
+                        <button type="button" (click)="deletedocument(i)" mat-icon-button color="warm">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumnsDocumentosAdjuntos"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumnsDocumentosAdjuntos;"></tr>
+            </table>
+    </div>
+        </div>
+                </form>
+                    <br>
+
+                <div *ngIf="(item.CodigoEtapaConfigProcesoSeleccion===3 || item.CodigoEtapaConfigProcesoSeleccion===4) && nnivel==='2'" class="grid sm:grid-cols-12 gap-6 w-full">
+                     <div class="table sm:col-span-6" *ngIf="item.CodigoEtapaConfigProcesoSeleccion===3 && nnivel==='2'">
+                                <table class="w-full" mat-table [dataSource]="dataSourceConsultas" matSort>
+                                    <ng-container matColumnDef="nro">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Nro.</th>
+                                        <td mat-cell *matCellDef="let element;" (click)="selectRow(element)"> {{element.cNro}} </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="tema">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Tema
+                                        </th>
+                                        <td mat-cell *matCellDef="let element"> {{element.cTema}}
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="pregunta">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Pregunta
+                                        </th>
+                                        <td mat-cell *matCellDef="let element"> {{element.cPregunta}}
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container  matColumnDef="opciones">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Opciones </th>
+                                        <td mat-cell *matCellDef="let element; let i= index">
+                                            <button *ngIf="item.CodigoEtapaConfigProcesoSeleccion===3 && nnivel==='2'" type="button" (click)="deleteconsulta(i)" mat-icon-button color="warm">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        </td>
+                                    </ng-container>
+                                    <tr mat-header-row *matHeaderRowDef="displayedColumnsConsultas"></tr>
+                                    <tr mat-row *matRowDef="let row; columns: displayedColumnsConsultas;"></tr>
+                                </table>
+                     </div>
+                     <div class="table sm:col-span-6" *ngIf="item.CodigoEtapaConfigProcesoSeleccion===4 && nnivel==='2'">
+                        <table class="w-full" mat-table [dataSource]="dataSourceConsultasGenerales" matSort>
+                            <ng-container matColumnDef="nro">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header> Nro.</th>
+                                <td mat-cell *matCellDef="let element;" (click)="selectRow(element)"> {{element.cNro}} </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="tema">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header> Tema
+                                </th>
+                                <td mat-cell *matCellDef="let element"> {{element.cTema}}
+                                </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="pregunta">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header> Pregunta
+                                </th>
+                                <td mat-cell *matCellDef="let element"> {{element.cPregunta}}
+                                </td>
+                            </ng-container>
+
+                            <ng-container  matColumnDef="opciones">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header> Opciones </th>
+                                <td mat-cell *matCellDef="let element; let i= index">
+                                    <button *ngIf="item.CodigoEtapaConfigProcesoSeleccion===3 && nnivel==='2'" type="button" (click)="deleteconsulta(i)" mat-icon-button color="warm">
+                                        <mat-icon>delete</mat-icon>
+                                    </button>
+                                </td>
+                            </ng-container>
+                            <tr mat-header-row *matHeaderRowDef="displayedColumnsConsultas"></tr>
+                            <tr mat-row *matRowDef="let row; columns: displayedColumnsConsultas;"></tr>
+                        </table>
+                     </div>
+
+                     <form [formGroup]="firstFormGroup" class="sm:col-span-6">
+                     <div class="sm:col-span-6">
+                        <div class="grid sm:grid-cols-12" >
+                            <div class="sm:col-span-2">
+                            <label class="-mt-4">Tema:</label>
+                            </div>
+                            <div class="sm:col-span-9">
+                            <mat-form-field class="fuse-mat-no-subscript w-full -mt-4">
+                            <input matInput  formControlName="cTema">
+                            </mat-form-field>
+                            </div>
+                            <div class="sm:col-span-1" *ngIf="item.CodigoEtapaConfigProcesoSeleccion===3 && nnivel==='2'">
+                            <button  (click)="addConsultas(firstFormGroup)" mat-icon-button color="warn" class="-mt-1" type="button">
+                                <mat-icon>add</mat-icon>
+                            </button>
+                            </div>
+                            <div class="sm:col-span-2 mt-5">
+                            <label >Pregunta:</label>
+                            </div>
+                            <div class="sm:col-span-10">
+                            <mat-form-field class="fuse-mat-no-subscript w-full ">
+                            <textarea matInput  formControlName="cPregunta" id="text-area"></textarea>
+                            </mat-form-field>
+                            </div>
+                            <div class="sm:col-span-2 mt-5">
+                            <label >Respuesta:</label>
+                            </div>
+                            <div class="sm:col-span-10">
+                            <mat-form-field class="fuse-mat-no-subscript w-full ">
+                            <textarea readonly matInput  formControlName="cRespuestaConsulta" id="text-area"></textarea>
+                            </mat-form-field>
+                            </div>
+                        </div>
+                     </div>
+                    </form>
+                </div>
+
+                <div *ngIf="(item.CodigoEtapaConfigProcesoSeleccion===8  && nnivel==='2')" class="grid sm:grid-cols-12 gap-6 w-full">
+                    <form [formGroup]="firstFormGroup" class="sm:col-span-6">
+                        <div class="sm:col-span-6">
+                            <div class="grid sm:grid-cols-12" >
+                                <div class="sm:col-span-4">
+                                <label>Tipo de Subasta:</label>
+                                </div>
+                                <div class="sm:col-span-8">
+                                <mat-form-field class="fuse-mat-no-subscript w-full -mt-4">
+                                <mat-select
+                                    [formControlName]="'nCodTipoSubasta'">
+                                    <mat-option *ngFor="let item of tiposubasta " [value]="item.nConsValor">{{item.cConsDescripcion}}</mat-option>
+                                </mat-select>
+                                </mat-form-field>
+                                </div>
+                                <div class="sm:col-span-4 mt-8" >
+                                <label >Valor tope de inicio:</label>
+                                </div>
+                                <div class="sm:col-span-5">
+                                    <mat-form-field class="fuse-mat-no-subscript w-full">
+                                    <input matInput  formControlName="nValorTopeInicio">
+                                    </mat-form-field>
+                                </div>
+                                <div class="sm:col-span-3">
+                                    <mat-form-field class="fuse-mat-no-subscript w-full">
+                                    <input matInput readonly formControlName="cDescMoneda">
+                                    </mat-form-field>
+                                </div>
+                                <div class="sm:col-span-4 mt-8">
+                                    <label >Valor Inicial:</label>
+                                </div>
+                                <div class="sm:col-span-5">
+                                        <mat-form-field class="fuse-mat-no-subscript w-full">
+                                        <input matInput  formControlName="nValorInicial">
+                                        </mat-form-field>
+                                </div>
+                                <div class="sm:col-span-3">
+                                        <mat-form-field class="fuse-mat-no-subscript w-full">
+                                        <input matInput readonly formControlName="cDescMoneda">
+                                        </mat-form-field>
+                                </div>
+
+                                <div class="sm:col-span-4 mt-8">
+                                    <label >Rango de Incremento:</label>
+                                </div>
+                                <div class="sm:col-span-5">
+                                        <mat-form-field class="fuse-mat-no-subscript w-full">
+                                        <input matInput  formControlName="nRangoIncremento">
+                                        </mat-form-field>
+                                </div>
+                                <div class="sm:col-span-3">
+                                        <mat-form-field class="fuse-mat-no-subscript w-full">
+                                        <input matInput readonly formControlName="cDescMoneda">
+                                        </mat-form-field>
+                                </div>
+
+                                <div class="sm:col-span-4 mt-8">
+                                    <label >Tiempo de espera:</label>
+                                </div>
+                                <div class="sm:col-span-6">
+                                        <mat-form-field class="fuse-mat-no-subscript w-full">
+                                        <input matInput  formControlName="nTiempoEspera">
+                                        </mat-form-field>
+                                </div>
+                                <div class="sm:col-span-2 mt-8 ml-5">
+                                    <label >(Minutos)</label>
+                                </div>
+
+
+
+                                <div class="sm:col-span-4 mt-8">
+                                    <label >Fecha de Subasta:</label>
+                                </div>
+                                <div class="sm:col-span-3">
+                                    <mat-form-field class="w-full">
+                                        <input autocomplete="off" tabindex="9" required upperCase matTooltip="Fecha de emision."
+                                         matInput formControlName="dFechaSubasta" [max]="todayDate" (dateChange)="getDiffDate(firstFormGroup.value.dFechaSubasta)" [matDatepicker]="dFechaSubasta">
+                                        <mat-datepicker-toggle matSuffix [for]="dFechaSubasta"></mat-datepicker-toggle>
+                                        <mat-datepicker #dFechaEmision></mat-datepicker>
+                                    </mat-form-field>
+                                </div>
+                                <div class="sm:col-span-2 mt-8 ml-5">
+                                    <label >Hora:</label>
+                                </div>
+                                <div class="sm:col-span-3">
+                                    <mat-form-field class="fuse-mat-no-subscript w-full">
+                                    <input matInput  formControlName="cTema">
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="sm:col-span-4 mt-8">
+                                    <label >Fecha de Capacitación:</label>
+                                </div>
+                                <div class="sm:col-span-3">
+                                    <mat-form-field class="w-full">
+                                        <input autocomplete="off" tabindex="9" required upperCase matTooltip="Fecha de emision."
+                                         matInput formControlName="dFechaCapacitacion" [max]="todayDate" (dateChange)="getDiffDate(firstFormGroup.value.dFechaCapacitacion)" [matDatepicker]="dFechaCapacitacion">
+                                        <mat-datepicker-toggle matSuffix [for]="dFechaCapacitacion"></mat-datepicker-toggle>
+                                        <mat-datepicker #dFechaEmision></mat-datepicker>
+                                    </mat-form-field>
+                                </div>
+                                <div class="sm:col-span-2 mt-8 ml-5">
+                                    <label >Hora:</label>
+                                </div>
+                                <div class="sm:col-span-3">
+                                    <mat-form-field class="fuse-mat-no-subscript w-full">
+                                    <input matInput  formControlName="cTema">
+                                    </mat-form-field>
+                                </div>
+
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <mat-card-header *ngIf="item.CodigoEtapaConfigProcesoSeleccion===1" id="header">Etapas</mat-card-header>
+                <div *ngIf="item.CodigoEtapaConfigProcesoSeleccion===1" class="grid sm:grid-cols-12 gap-6 w-full mt-5">
+                    <div class="grid sm:col-span-8">
+                        <table mat-table [dataSource]="dataSourceCalendario" matSort>
+                            <ng-container matColumnDef="id">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header> Id.</th>
+                                <td mat-cell *matCellDef="let element"> {{element.CodigoEtapaConfigProcesoSeleccion}} </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="nombreetapa">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre de Etapa
+                                </th>
+                                <td mat-cell *matCellDef="let element"> {{element.NombreEtapaConfigProcesoSeleccion}}
+                                </td>
+                            </ng-container>
+                            <ng-container matColumnDef="detalle">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header> Detalle
+                                </th>
+                                <td mat-cell *matCellDef="let element"> {{element.DetalleProcesoSeleccion}}
+                                </td>
+                            </ng-container>
+                            <ng-container matColumnDef="fechainicio">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha Inicio
+                                </th>
+                                <td mat-cell *matCellDef="let element"> {{element.FechaInicio | date:'dd-MM-yyyy'}}
+                                </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="fechafin">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha Fin
+                                </th>
+                                <td mat-cell *matCellDef="let element"> {{element.FechaFin | date:'dd-MM-yyyy' }}
+                                </td>
+                            </ng-container>
+
+                            <tr mat-header-row *matHeaderRowDef="displayedColumnsCalendario"></tr>
+                            <tr mat-row *matRowDef="let row; columns: displayedColumnsCalendario;"></tr>
+                        </table>
+                    </div>
+                </div>
+                <form [formGroup]="firstFormGroup">
+                <div *ngIf="item.CodigoEtapaConfigProcesoSeleccion!==1" class="grid lg:grid-cols-12 md:grid-cols-12 sm:grid-cols-12 grid-cols-12 gap-2 mt-2">
+                    <div class="grid sm:col-span-4">
+                        <mat-form-field *ngIf="item.CodigoEtapaConfigProcesoSeleccion===4 && bBuenaPro===false && nnivel==='1'" class="fuse-mat-no-subscript w-full mt-5">
+                            <mat-label>Apelación</mat-label>
+                            <textarea matInput formControlName="cApelacion"   id="text-area"></textarea>
+                        </mat-form-field>
+                        </div>
+                    <div class="grid sm:col-span-4">
+                    <mat-form-field *ngIf="nCodEstado===2" class="fuse-mat-no-subscript w-full mt-5">
+                        <mat-label>Observación </mat-label>
+                        <textarea readonly matInput formControlName="cObservacion"   id="text-area"></textarea>
+                    </mat-form-field>
+                    </div>
+                    <div class="grid sm:col-span-4">
+                    <mat-form-field *ngIf="nCodEstado===2 && item.CodigoEtapaConfigProcesoSeleccion!==4" class="fuse-mat-no-subscript w-full mt-5">
+                        <mat-label>Respuesta</mat-label>
+                        <textarea matInput  formControlName="cRespuesta" id="text-area"></textarea>
+                    </mat-form-field>
+                </div>
+                </div>
+            </form>
+                    <div *ngIf="(contador !==0 && nnivel==='1') || ((contador === 1 || contador ===2 || contador ===5) && nnivel==='2')" class="grid lg:grid-cols-5 md:grid-cols-1 sm:grid-cols-1 grid-cols-1 gap-2 mt-2">
+                        <div *ngIf="bBuenaPro===false" class=" lg:col-span-1 col-start-3 md:col-span-1 sm:col-span-1 col-span-1 justify-center align-center">
+                            <button mat-flat-button color="warn" (click)="guardarRegistroProveedorProcesoSeleccion(item.CodigoEtapaConfigProcesoSeleccion)" >
+                                Guardar
+                                <mat-icon>save</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+            </mat-step>
+</mat-stepper>
+</mat-card>
+
+
+</div>

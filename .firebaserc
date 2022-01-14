@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "plataformaproveedores-dev": {
+      "hosting": {
+        "fuse": [
+          "plataformaproveedores-dev"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "plataformaproveedores-dev"
+  }
+}

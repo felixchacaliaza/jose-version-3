@@ -1,0 +1,153 @@
+<div class="flex flex-col flex-auto min-w-0">
+    <!-- Header -->
+    <div
+        class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
+        <div class="flex-1 min-w-0">
+            <!-- Breadcrumbs -->
+            <div class="flex flex-wrap items-center font-medium">
+                <div>
+                    <a class="whitespace-nowrap text-primary-500">Caja Ica</a>
+                </div>
+                <!--                 <div class="flex items-center ml-1 whitespace-nowrap">
+                    <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                    <a class="ml-1 text-primary-500">Administración</a>
+                </div> -->
+                <div class="flex items-center ml-1 whitespace-nowrap">
+                    <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                    <span class="ml-1 text-secondary"> Convocatorias</span>
+                </div>
+            </div>
+            <!-- Title -->
+            <div class="mt-2">
+                <h2 class="text-l md:text-2xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                    Convocatorias
+                </h2>
+            </div>
+        </div>
+    </div>
+    <div  class="flex-auto p-6 sm:p-10">
+        <div class="grid grid-cols-12 gap-4">
+            <div class="xl:col-span-12 lg:col-span-12 md:col-span-12 sm:col-span-12 col-span-12 justify-items-center">
+            <mat-card-title>Búsqueda de Cotizaciones</mat-card-title>
+            </div>
+            <div class="xl:col-span-3 lg:col-span-3 md:col-span-3 sm:col-span-12 col-span-12 justify-items-center">
+                <mat-form-field appearance="outline" class="w-full">
+                    <mat-label>Etapa</mat-label>
+                    <mat-select (valueChange)="getCodEtapa($event)">
+                        <mat-option *ngFor="let item of etapas " [value]="item.CodigoEtapaConfigCotizacion">
+                            {{item.NombreEtapaConfigCotizacion}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="xl:col-span-3 lg:col-span-3 md:col-span-3 sm:col-span-12 col-span-12 justify-items-center">
+                <button style="margin-top: 12px;" mat-flat-button color="warn" (click)="getQuotation()">
+                    Buscar &nbsp;&nbsp;
+                    <mat-icon>search</mat-icon>
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-12  w-full mt-8">
+            <div *ngFor="let quote of process; let i = index"
+                class="xl:col-span-3 lg:col-span-4 md:col-span-4 sm:col-span-12 col-span-12 grid gap-8 sm:grid-flow-col xl:grid-flow-row">
+                <!-- Previous statement -->
+                <div
+                    class="relative flex flex-col flex-auto p-6 pr-3 pb-3 bg-card rounded-2xl shadow overflow-hidden">
+                    <div class="absolute bottom-0 right-0 w-24 h-24 -m-6">
+                        <mat-icon class="icon-size-24 opacity-25 text-green-500 dark:text-green-400"
+                            [svgIcon]="'heroicons_outline:check-circle'"></mat-icon>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="flex flex-col">
+                            <div class="text-lg font-medium tracking-tight leading-6 truncate"> {{quote.cNroCotizacionRequerimientoCompra}}
+                            </div>
+                            <div class="text-green-600 font-medium text-sm">
+                                {{quote.cNombreRequerimientoCompra}}
+                            </div>
+                        </div>
+                        <div class="ml-auto -mt-2">
+                            <button  (click)="goto(quote)" style="background-color: red;" mat-icon-button>
+                                <mat-icon style="color: white;" class="icon-size-5" [svgIcon]="'heroicons_solid:chevron-double-right'">
+                                </mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex flex-row flex-wrap mt-4 -mx-6">
+                        <div class="flex flex-col mx-6 my-3">
+                            <div class="text-sm font-medium leading-none text-secondary">Etapa</div>
+                            <div class="mt-2 font-medium text-md leading-none">{{quote.Detalle}}</div>
+                        </div>
+                        <div class="flex flex-col mx-6 my-3">
+                            <div class="text-sm font-medium leading-none text-secondary">Rubro</div>
+                            <div class="mt-2 font-medium text-md leading-none">{{quote.cNombreRubro}}</div>
+                        </div>
+                        <div class="flex flex-col mx-6 my-3">
+                            <div class="text-sm font-medium leading-none text-secondary">Fecha</div>
+                            <div class="mt-2 font-medium text-md leading-none">{{quote.Duracion}}</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="container w-full ">
+        <mat-card>
+            <mat-card-title>Búsqueda de Cotizaciones</mat-card-title>
+            <div class="grid sm:grid-cols-9 gap-6 w-full mt-8">
+                <div class="sm:col-span-3 ">
+                    <mat-form-field class="fuse-mat-no-subscript w-full" appearance="outline">
+                        <mat-label>Etapa</mat-label>
+                        <mat-select (valueChange)="getCodEtapa($event)">
+                            <mat-option *ngFor="let item of etapas " [value]="item.CodigoEtapaConfigCotizacion">
+                                {{item.NombreEtapaConfigCotizacion}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="sm:col-span-3 ">
+                    <button mat-flat-button color="warn" (click)="getQuotation()">
+                        Buscar
+                        <mat-icon>search</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </mat-card>
+
+        <div class="w-full mt-8">
+            <mat-card class="mb-8" *ngFor="let quote of process; let i = index">
+                <mat-content>
+                    <div class="w-full pl-0 grid grid-cols-6">
+                        <div class="sm:col-span-1">
+                            <div *ngFor="let item of data; let i = index">
+                                <b>
+                                    {{item.name}} - </b>
+                                <br>
+                            </div>
+                        </div>
+                        <div class="sm:col-span-4">
+                            <p>
+                                {{quote.cNroCotizacionRequerimientoCompra}}
+                            </p>
+                            <p>
+                                {{quote.cNombreRequerimientoCompra}}
+                            </p>
+                            <p>
+                                {{quote.Detalle}}
+                            </p>
+                            <p>
+                                {{quote.Duracion}}
+                            </p>
+                            <p>
+                                {{quote.cNombreRubro}}
+                            </p>
+                        </div>
+                        <div class="sm:col-span-1 align-details">
+                            <a (click)="goto(quote)"> >> Ver</a>
+                        </div>
+                    </div>
+                </mat-content>
+            </mat-card>
+        </div>
+    </div> -->
+
+</div>

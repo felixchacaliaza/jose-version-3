@@ -1,0 +1,53 @@
+<form id="cambiarClaveForm" #myForm="ngForm" [formGroup]="formPreRegistro"
+    (ngSubmit)="validarPreregistro(myForm)" novalidate>
+    <div class="card card-dark">
+        <div class="card-header ">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="col-span-1">
+
+                    <h3 style="font-size: 20px;" class="card-title">Elije el Tipo de Registro</h3>
+                </div>
+                <div class="col-span-1 text-right">
+
+                    <button (click)="cerrarModal();" type="button" style="background-color:#ED2A32 !important;" mat-mini-fab>
+                        <mat-icon style="color:white !important;">clear</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+
+            <div class="grid grid-cols-1">
+                <br>
+                <div class="col-span-1 justify-items-center">
+                <mat-form-field  class="w-full">
+                    <mat-label>Tipo de Persona</mat-label>
+                    <mat-select  required [formControlName]="'cTipoRegistro'" >
+                        <mat-option value="1">Persona Natural</mat-option>
+                        <mat-option value="2">Persona Juridica</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="formPreRegistro.get('cTipoRegistro').hasError('required')">
+                        El tipo de persona es <b>requerido</b>.
+                    </mat-error>
+                </mat-form-field>
+                </div>
+            </div>
+            <br>
+            <div class="barra-menu">
+                <nav class="nav d-flex">
+                    <div class="btn-group mr-3 text-right">
+                        <button type="button" (click)="cerrarModal()" mat-raised-button color="warn">
+                            <mat-icon aria-hidden="false" aria-label="Salir">logout</mat-icon>
+                            &nbsp;&nbsp;Cancelar
+                        </button>&nbsp;
+                        <button  type="submit" mat-raised-button color="warn">
+                            <mat-icon  aria-label="Guardar teléfono.">security</mat-icon>
+                            &nbsp;&nbsp;Ir al registro
+                        </button>&nbsp;
+
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</form>

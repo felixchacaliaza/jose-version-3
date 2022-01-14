@@ -1,0 +1,813 @@
+<mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
+    <mat-step [stepControl]="firstFormGroup">
+        <form [formGroup]="firstFormGroup">
+            <div class="container">
+                <ng-template matStepLabel>Datos Generales</ng-template>
+                <div class="grid lg:grid-cols-5 md:grid-cols-2 sm:grid-cols-3 grid-cols-1 gap-2">
+                    <div class="lg:col-span-2 md:col-span-1 sm:col-span-2 col-span-1">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>RUC</mat-label>
+                            <input *ngIf="!bExtranjero" (keyup)="saveRuc(firstFormGroup)" #cRuc DigitEnerotNumber id="cRuc" minlength="{{longitudRuc}}"
+                                maxlength="{{longitudRuc}}" type="text" matInput placeholder="" formControlName="cRuc">
+                            <input *ngIf="bExtranjero" (keyup)="saveRuc(firstFormGroup)" #cRuc id="cRuc" minlength="{{longitudRuc}}"
+                                maxlength="{{longitudRuc}}" type="text" matInput placeholder="" formControlName="cRuc">
+                            <mat-hint style="text-align: end;" align="end">{{firstFormGroup.value.cRuc.length}} / {{longitudRuc}}
+                            </mat-hint>
+                            <mat-error *ngIf="firstFormGroup.get('cRuc').hasError('required')">
+                                El número de documento es <b>requerido</b>.
+                            </mat-error>
+                            <mat-error
+                                *ngIf="!firstFormGroup.get('cRuc').hasError('required') && !firstFormGroup.get('cRuc').hasError('minLength') ">
+                                El número de RUC debe contener minimo <strong>{{longitudRuc}} caracteres.</strong>
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="lg:col-span-1 md:col-span-1 sm:col-span-1 col-span-1 d-flex justify-center align-center">
+                        <mat-checkbox  (click)="setearExtrajero()" class="mt-7">Extranjero</mat-checkbox>
+                    </div>
+                    <div class="lg:col-span-2 md:col-span-2 sm:col-span-3 col-span-1">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Razón Social</mat-label>
+                            <input formControlName="cRazonSocial" matInput placeholder="Placeholder">
+                            <mat-error *ngIf="firstFormGroup.get('cRazonSocial').hasError('required')">
+                                La razón social es <b>requerida</b>.
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="grid lg:grid-cols-6 md:grid-cols-2 sm:grid-cols-1 gap-2">
+                    <div class="lg:col-span-6 md:col-span-2 sm:col-span-1">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Nombre Comercial</mat-label>
+                            <input matInput placeholder="Placeholder" formControlName="cNombreComercial">
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="grid lg:grid-cols-6 md:grid-cols-4 sm:grid-cols-6 gap-2">
+                    <div class="lg:col-span-3 md:col-span-2 sm:col-span-3">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Rubros de la Empresa</mat-label>
+                            <mat-select required (selectionChange)="selectRubro($event.value)"  multiple>
+                                <mat-option *ngFor="let item of rubros" [value]="item.nConsValor">{{item.cConsDescripcion}}</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="firstFormGroup.get('cRubro').hasError('required')">
+                              El rubro de la empresa es <b>requerido</b>.
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="lg:col-span-2 md:col-span-1 sm:col-span-2">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <input autocomplete="off" tabindex="9" required upperCase matTooltip="Fecha de emision."
+                                readonly matInput formControlName="dFechaEmision" [max]="todayDate" (dateChange)="getDiffDate(firstFormGroup.value.dFechaEmision)" [matDatepicker]="dFechaEmision">
+                            <mat-label>Fecha de Emisión</mat-label>
+                            <mat-datepicker-toggle matSuffix [for]="dFechaEmision"></mat-datepicker-toggle>
+                            <mat-datepicker #dFechaEmision></mat-datepicker>
+                            <mat-error *ngIf="firstFormGroup.get('dFechaEmision').hasError('required')">
+                                <strong>La fecha de emision es requerida.</strong>
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="lg:col-span-1 md:col-span-1 sm:col-span-1">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Tiempo</mat-label>
+                            <input matInput [value]="timeService" required>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="grid lg:grid-cols-6 md:grid-cols-3 gap-2 ">
+                    <div class="lg:col-span-2 md:col-span-1">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Magnitud Empresarial</mat-label>
+                            <mat-select required [formControlName]="'cTipoMagnitud'">
+                                <mat-option *ngFor="let item of magnitudempresarial" [value]="item.CodigoValor">{{item.Descripcion}}</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="firstFormGroup.get('cTipoMagnitud').hasError('required')">
+                                El tipo de magnitud empresarial es <b>requerido</b>.
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="lg:col-span-2 md:col-span-1">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Tipo de Persona Jurídica</mat-label>
+                            <mat-select required [formControlName]="'cTipoPersonaJuridica'">
+                                <mat-option *ngFor="let item of tipopersonajuridica" [value]="item.CodigoValor">{{item.Descripcion}}</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="firstFormGroup.get('cTipoPersonaJuridica').hasError('required')">
+                                El tipo de persona jurídica es <b>requerido</b>.
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="lg:col-span-2 md:col-span-1">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Actividad Económica CIIU</mat-label>
+                            <mat-select required [formControlName]="'cActividadEconomica'">
+                                <mat-option *ngFor="let item of actividadeconomica" [value]="item.CodigoCIIU">{{item.Descripcion}}</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="firstFormGroup.get('cActividadEconomica').hasError('required')">
+                                El tipo de actividad económica es <b>requerida</b>.
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="grid lg:grid-cols-6 md:grid-cols-3 sm:grid-cols-3 gap-2">
+                    <div class="lg:col-span-2 md:col-span-1 sm:col-span-1">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Teléfono movil</mat-label>
+                            <input #nCelular DigitEnerotNumber id="nCelular" minlength="{{longitudCelular}}"
+                                maxlength="{{longitudCelular}}" type="text" matInput placeholder=""
+                                formControlName="nCelular" placeholder="+51">
+                            <mat-icon matSuffix>phone</mat-icon>
+                            <mat-hint style="text-align: end;" align="end">{{nCelular.value.length}} /
+                                {{longitudCelular}}
+                            </mat-hint>
+                            <mat-error
+                                *ngIf="!firstFormGroup.get('nCelular').hasError('required') && !firstFormGroup.get('nCelular').hasError('minLength') ">
+                                El número de celular debe contener minimo <strong>{{longitudCelular}}
+                                    caracteres.</strong>
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="lg:col-span-2 md:col-span-1  sm:col-span-1">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Teléfono fijo</mat-label>
+                            <input #nTelFijo DigitEnerotNumber id="nTelFijo" minlength="{{longitudCelular}}"
+                                maxlength="{{longitudCelular}}" type="text" matInput placeholder=""
+                                formControlName="nTelFijo" placeholder="+51">
+                            <mat-icon matSuffix>phone</mat-icon>
+                            <mat-hint style="text-align: end;" align="end">{{nTelFijo.value.length}} /
+                                {{longitudCelular}}
+                            </mat-hint>
+                            <mat-error
+                                *ngIf="!firstFormGroup.get('nTelFijo').hasError('required') && !firstFormGroup.get('nTelFijo').hasError('minLength') ">
+                                El número de celular debe contener minimo <strong>{{longitudCelular}}
+                                    caracteres.</strong>
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="lg:col-span-2 md:col-span-1">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Lugar Constitucion</mat-label>
+                            <mat-select [disabled]=!bExtranjero required [formControlName]="'cLugarConstitucion'">
+                                <mat-option *ngFor="let item of pais" [value]="item.cUbigeoCod">{{item.cUbigeoDesc}}</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="firstFormGroup.get('cLugarConstitucion').hasError('required')">
+                                El tipo de lugar de constitucion es <b>requerido</b>.
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+
+                </div>
+                <!--         <div class="col-span-4">
+            <label><b>Ubicación - Domicilio Legal:</b></label>
+        </div> -->
+                <div class="grid grid-cols-12 gap-2">
+                    <div class="col-span-12">
+                        <label><b>Datos de Ubicación:</b></label>
+                    </div>
+                </div>
+                <div class="grid xl:grid-cols-4 lg:grid-cols-4 md:grid-cols-4 sm:grid-cols-6 grid-cols-6 gap-2">
+                    <div class="xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-3 col-span-3">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Departamento</mat-label>
+                            <mat-select [disabled]= bExtranjero  [formControlName]="'cDepartamento'"  (selectionChange)="listarProvincias($event.value)">
+                                <mat-option *ngFor="let item of departamentos" [value]="item.cUbigeoCod">{{item.cUbigeoDesc}}</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="firstFormGroup.get('cDepartamento').hasError('required')">
+                                El departamento es <b>requerido</b>.
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-3 col-span-3">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Provincia</mat-label>
+                            <mat-select [disabled]= bExtranjero  [formControlName]="'cProvincia'" (selectionChange)="listarDistritos($event.value)" >
+                                <mat-option *ngFor="let item of provincias" [value]="item.cUbigeoCod">{{item.cUbigeoDesc}}</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="firstFormGroup.get('cProvincia').hasError('required')">
+                                La provincia es <b>requerida</b>.
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-3 col-span-3">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Distrito</mat-label>
+                            <mat-select [disabled]= bExtranjero  [formControlName]="'cDistrito'" (selectionChange)="listarZonas($event.value)">
+                                <mat-option *ngFor="let item of distritos" [value]="item.cUbigeoCod">{{item.cUbigeoDesc}}</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="firstFormGroup.get('cDistrito').hasError('required')">
+                                El distrito es <b>requerido</b>.
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-3 col-span-3">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Zona</mat-label>
+                            <mat-select [disabled]= bExtranjero  [formControlName]="'cZona'">
+                                <mat-option *ngFor="let item of zonas" [value]="item.cUbigeoCod">{{item.cUbigeoDesc}}</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="firstFormGroup.get('cZona').hasError('required')">
+                                La zona es <b>requerida</b>.
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    </div>
+                    <div class="grid xl:grid-cols-6 lg:grid-cols-6 md:grid-cols-6 sm:grid-cols-6 grid-cols-6 gap-2">
+                    <div class="xl:col-span-2 lg:col-span-2 md:col-span-2 sm:col-span-2 col-span-2">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Tipo de vía</mat-label>
+                            <mat-select [formControlName]="'cTipoVia'">
+                                <mat-option *ngFor="let item of vias" [value]="item.CodigoValor">{{item.Descripcion}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="xl:col-span-4 lg:col-span-4 md:col-span-4 sm:col-span-4 col-span-4">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Descripción de vía</mat-label>
+                            <input matInput placeholder="" [formControlName]='"cDescripcionVia"'>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="grid xl:grid-cols-8 lg:grid-cols-8 md:grid-cols-8 sm:grid-cols-8 gap-2">
+                    <div class="xl:col-span-2 lg:col-span-2 md:col-span-4 sm:col-span-4">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Tipo de zona</mat-label>
+                            <mat-select [formControlName]="'cTipoZona'">
+                                <mat-option *ngFor="let item of tipozonas" [value]="item.CodigoValor">{{item.Descripcion}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="xl:col-span-2 lg:col-span-2  md:col-span-4 sm:col-span-4">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Descripción de zona</mat-label>
+                            <input formControlName="cDescripcionZona" matInput placeholder="">
+                        </mat-form-field>
+                    </div>
+                    <div class="xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-2">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Manzana</mat-label>
+                            <input formControlName="cManzana" matInput placeholder="">
+                        </mat-form-field>
+                    </div>
+                    <div class="xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-2">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Lote</mat-label>
+                            <input formControlName="cLote" matInput placeholder="">
+                        </mat-form-field>
+                    </div>
+                    <div class="xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-2">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Etapa</mat-label>
+                            <input formControlName="cEtapa" matInput placeholder="">
+                        </mat-form-field>
+                    </div>
+                    <div class="xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-2">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Nro</mat-label>
+                            <input formControlName="cNro" DigitEnerotNumber matInput placeholder="">
+                        </mat-form-field>
+                    </div>
+                    </div>
+                    <div class="grid grid-cols-6 xl:grid-cols-12 lg:grid-cols-12 md:grid-cols-10 sm:grid-cols-10 gap-2">
+                    <div class="xl:col-span-2 lg:col-span-2 md:col-span-2 sm:col-span-2 col-span-2">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Interior</mat-label>
+                            <mat-select [formControlName]="'cTipoInterior'">
+                                <mat-option *ngFor="let item of interior" [value]="item.CodigoValor">{{item.Descripcion}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="xl:col-span-4 lg:col-span-4 md:col-span-3 sm:col-span-3 col-span-4">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Descripción del Interior</mat-label>
+                            <input matInput placeholder="" formControlName="cDescripcionInterior">
+                        </mat-form-field>
+                    </div>
+                    <div class="xl:col-span-2 lg:col-span-2 md:col-span-2 sm:col-span-2 col-span-2">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Bloque</mat-label>
+                            <mat-select [formControlName]="'cTipoBloque'">
+                                <mat-option *ngFor="let item of bloque" [value]="item.CodigoValor">{{item.Descripcion}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="xl:col-span-4 lg:col-span-4 md:col-span-3 sm:col-span-3 col-span-4">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Descripción del Bloque</mat-label>
+                            <input matInput placeholder="" formControlName="cDescripcionBloque">
+                        </mat-form-field>
+                    </div>
+                    <div class="xl:col-span-12 lg:col-span-12 md:col-span-10 sm:col-span-10 col-span-6">
+                        <mat-form-field class="w-full" appearance="outline">
+                            <mat-label>Referencia</mat-label>
+                            <input matInput placeholder="" formControlName="cReferencia">
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </mat-step>
+    <mat-step [stepControl]="secondFormGroup">
+        <form [formGroup]="secondFormGroup"  (ngSubmit)="addContact(secondFormGroup)">
+            <ng-template matStepLabel>Datos de Contacto y personas vinculadas</ng-template>
+            <div class="grid grid-cols-12 gap-2">
+                <div class="col-span-12">
+                    <label><b>Datos de contacto:</b></label>
+                </div>
+            </div>
+            <div class="grid xl:grid-cols-12 lg:grid-cols-8 md:grid-cols-12 sm:grid-cols-8 grid-cols-2 gap-2">
+                <div class="xl:col-span-3 lg:col-span-2  md:col-span-3 sm:col-span-4 col-span-2">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Tipo de Doc.</mat-label>
+                        <mat-select (selectionChange)="seleccionarTipoDocumento($event.value)"
+                            [formControlName]="'nCodTipoDoc'">
+                            <mat-option *ngFor="let item of tipodocumentos" [value]="item.CodigoValor">{{item.Descripcion}}</mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="secondFormGroup.get('nCodTipoDoc').hasError('required')">
+                            El tipo de documento es <b>obligatorio</b>.
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="xl:col-span-3 lg:col-span-2 md:col-span-3 sm:col-span-4 col-span-2">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Documento</mat-label>
+                        <input #cNroDoc DigitEnerotNumber id="cNroDoc"
+                            minlength="{{longitudMinimaNumeroDocumento}}" maxlength="{{longitudMaximaNumeroDocumento}}"
+                            type="text" matInput placeholder="" formControlName="cNroDoc">
+                        <mat-hint style="text-align: end;" align="end">{{cNroDoc.value.length}} /
+                            {{longitudMaximaNumeroDocumento}}
+                        </mat-hint>
+                        <mat-error *ngIf="secondFormGroup.get('cNroDoc').hasError('required')">
+                            El número de documento es <b>obligatorio</b>.
+                        </mat-error>
+                        <mat-error
+                            *ngIf="!secondFormGroup.get('cNroDoc').hasError('required') && !secondFormGroup.get('cNroDoc').hasError('minLength') ">
+                            El número de documento debe contener minimo <strong>{{longitudMinimaNumeroDocumento}}
+                                caracteres.</strong>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="xl:col-span-3 lg:col-span-2 md:col-span-3 sm:col-span-4 col-span-2">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Correo</mat-label>
+                        <input matInput type="email" id="email" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-zA-Z]{2,4}"
+                            placeholder="" [formControlName]="'cCorreo'">
+                        <mat-error>El correo es incorrecto</mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="xl:col-span-3 lg:col-span-2 md:col-span-3 sm:col-span-4 col-span-2">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Teléfono</mat-label>
+                        <input #cTelefono DigitEnerotNumber id="cTelefono" minlength="{{longitudCelular}}"
+                            maxlength="{{longitudCelular}}" type="text" matInput placeholder=""
+                            formControlName="cTelefono" placeholder="+51">
+                        <mat-icon matSuffix>phone</mat-icon>
+                        <mat-hint style="text-align: end;" align="end">{{cTelefono.value.length}} / {{longitudCelular}}
+                        </mat-hint>
+                        <mat-error
+                            *ngIf="!secondFormGroup.get('cTelefono').hasError('required') && !secondFormGroup.get('cTelefono').hasError('minLength') ">
+                            El número de teléfono debe contener minimo <strong>{{longitudCelular}} caracteres.</strong>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="grid xl:grid-cols-10 lg:grid-cols-10 md:grid-cols-7 sm:grid-cols-4 gap-2 grid-cols-4">
+                <div class="xl:col-span-3 lg:col-span-3 md:col-span-2 sm:col-span-2 col-span-4">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Apellido Paterno</mat-label>
+                        <input matInput placeholder="" [formControlName]="'cApePaterno'">
+                        <mat-error *ngIf="secondFormGroup.get('cApePaterno').hasError('required')">
+                            El apellido paterno es <b>requerido</b>.
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="xl:col-span-3 lg:col-span-3 md:col-span-2 sm:col-span-2 col-span-4">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Apellido Materno</mat-label>
+                        <input matInput placeholder="" [formControlName]="'cApeMaterno'">
+                        <mat-error *ngIf="secondFormGroup.get('cApeMaterno').hasError('required')">
+                            El apellido materno es <b>requerido</b>.
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="xl:col-span-3 lg:col-span-3 md:col-span-2 sm:col-span-3 col-span-3">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Nombres</mat-label>
+                        <input matInput placeholder="" [formControlName]="'cNombres'">
+                        <mat-error *ngIf="secondFormGroup.get('cNombres').hasError('required')">
+                            Los nombres son <b>requeridos</b>.
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="xl:col-span-1 lg:col-span-1 md:col-span-1 sm:col-span-1 col-span-1 d-flex justify-center align-center">
+                    <button *ngIf="secondFormGroup.valid" mat-icon-button color="warn" class="mt-11" type="submit">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                    <button *ngIf="secondFormGroup.invalid" mat-icon-button color="warn" [disabled]
+                        class="mt-11 disabled" type="button">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                </div>
+
+            </div>
+            <div class="grid xl:grid-cols-1 lg:grid-cols-1 md:grid-cols-1 sm:grid-cols-1 grid-cols-1" >
+            <div class="xl:col-span-1 lg:col-span-1 md:col-span-1 sm:col-span-1 col-span-1 mat-elevation-z8">
+                <table mat-table [dataSource]="dataSource" matSort>
+
+                    <ng-container matColumnDef="tipodocumento">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Tipo doc.</th>
+                        <td mat-cell *matCellDef="let element"> {{element.nCodTipoDoc}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="nrodocumento">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Documento
+                        </th>
+                        <td mat-cell *matCellDef="let element"> {{element.cNroDoc}}
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="apepaterno">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Ape. paterno </th>
+                        <td mat-cell *matCellDef="let element"> {{element.cApePaterno}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="apematerno">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Ape. materno </th>
+                        <td mat-cell *matCellDef="let element"> {{element.cApeMaterno }} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="nombre">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombres </th>
+                        <td mat-cell *matCellDef="let element"> {{element.cNombres }} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="correo">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Correo </th>
+                        <td mat-cell *matCellDef="let element"> {{element.cCorreo }} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="telefono">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Telefono </th>
+                        <td mat-cell *matCellDef="let element"> {{element.cTelefono}} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="opciones">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Opciones </th>
+                        <td mat-cell *matCellDef="let element; let i= index">
+                            <button type="button" (click)="delete(i)" mat-icon-button color="warm">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+                <mat-toolbar>
+                    <mat-toolbar-row>
+                        <!--                 <button  mat-icon-button color="primary" aria-label="Descargar en formato PDF">
+                    <mat-icon svgIcon="heroicons_outline:download"></mat-icon>
+                 </button> -->
+                        <mat-paginator style="background-color: transparent;" [length]="data.length"
+                            [pageSizeOptions]="[5]">
+                        </mat-paginator>
+                    </mat-toolbar-row>
+                </mat-toolbar>
+            </div>
+        </div>
+        </form>
+            <hr>
+            <form [formGroup]="secondFormGroup2" (ngSubmit)="addContact2(secondFormGroup2)">
+            <div class="grid grid-cols-12 gap-2">
+                <div class="col-span-12">
+                    <label><b>Personas vinculadas:</b></label>
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+                <div class="col-span-1">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Tipo </mat-label>
+                        <mat-select
+                            [formControlName]="'nCodTipo'">
+                            <mat-option *ngFor="let item of tipopersonasvinculadas" [value]="item.nConsValor">{{item.cConsDescripcion}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-span-1">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Tipo de Doc.</mat-label>
+                        <mat-select (selectionChange)="seleccionarTipoDocumento2($event.value)"
+                            [formControlName]="'nCodTipoDoc'">
+                            <mat-option *ngFor="let item of tipodocumentos" [value]="item.CodigoValor">{{item.Descripcion}}</mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="secondFormGroup2.get('nCodTipoDoc').hasError('required')">
+                            El tipo de documento es <b>obligatorio</b>.
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="col-span-1">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Documento</mat-label>
+                        <input #cNroDoc DigitEnerotNumber id="cNroDoc"
+                            minlength="{{longitudMinimaNumeroDocumento2}}" maxlength="{{longitudMaximaNumeroDocumento2}}"
+                            type="text" matInput placeholder="" formControlName="cNroDoc">
+                        <mat-hint style="text-align: end;" align="end">{{cNroDoc.value.length}} /
+                            {{longitudMaximaNumeroDocumento2}}
+                        </mat-hint>
+                        <mat-error *ngIf="secondFormGroup2.get('cNroDoc').hasError('required')">
+                            El número de documento es <b>requerido</b>.
+                        </mat-error>
+                        <mat-error
+                            *ngIf="!secondFormGroup2.get('cNroDoc').hasError('required') && !secondFormGroup2.get('cNroDoc').hasError('minLength') ">
+                            El número de documento debe contener minimo <strong>{{longitudMinimaNumeroDocumento2}}
+                                caracteres.</strong>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="grid grid-cols-9 gap-2">
+                <div class="col-span-3">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Apellido Paterno</mat-label>
+                        <input matInput placeholder="" [formControlName]="'cApePaterno'">
+                        <mat-error *ngIf="secondFormGroup2.get('cApePaterno').hasError('required')">
+                            El apellido paterno es <b>requerido</b>.
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="col-span-3">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Apellido Materno</mat-label>
+                        <input matInput placeholder="" [formControlName]="'cApeMaterno'">
+                        <mat-error *ngIf="secondFormGroup2.get('cApeMaterno').hasError('required')">
+                            El apellido materno es <b>obligatorio</b>.
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="col-span-3">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Nombres</mat-label>
+                        <input matInput placeholder="" [formControlName]="'cNombres'">
+                        <mat-error *ngIf="secondFormGroup2.get('cNombres').hasError('required')">
+                            Los nombres son <b>obligatorios</b>.
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="col-span-7">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Direccion</mat-label>
+                        <input matInput placeholder="" [formControlName]="'cDireccion'">
+                    </mat-form-field>
+                </div>
+                <div class="col-span-1 d-flex justify-center align-center">
+                    <mat-checkbox [formControlName]="'bDDJJ'" class="mt-13">DDJJ</mat-checkbox>
+                </div>
+                <div class="col-span-1 d-flex justify-center align-center">
+                    <button *ngIf="secondFormGroup2.valid" mat-icon-button color="warn" class="mt-11" type="submit">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                    <button *ngIf="secondFormGroup2.invalid" mat-icon-button color="warn" [disabled]
+                        class="mt-11 disabled" type="button">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                </div>
+            </div>
+            <div class="grid xl:grid-cols-1 lg:grid-cols-1 md:grid-cols-1 sm:grid-cols-1 grid-cols-1" >
+                <div class="xl:col-span-1 lg:col-span-1 md:col-span-1 sm:col-span-1 col-span-1 mat-elevation-z8">
+                    <table mat-table [dataSource]="dataSource2" matSort>
+
+                        <ng-container matColumnDef="tipo">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Tipo </th>
+                            <td mat-cell *matCellDef="let element"> {{element.nCodTipo}} </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="tipodocumento">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Tipo doc.</th>
+                            <td mat-cell *matCellDef="let element"> {{element.nCodTipoDoc}} </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="nrodocumento">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Documento
+                            </th>
+                            <td mat-cell *matCellDef="let element"> {{element.cNroDoc}}
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="apepaterno">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Ape. paterno </th>
+                            <td mat-cell *matCellDef="let element"> {{element.cApePaterno}} </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="apematerno">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Ape. materno </th>
+                            <td mat-cell *matCellDef="let element"> {{element.cApeMaterno}} </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="nombre">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombres </th>
+                            <td mat-cell *matCellDef="let element"> {{element.cNombres}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="direccion">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Direccion </th>
+                            <td mat-cell *matCellDef="let element"> {{element.cDireccion}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="seleccionado">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Seleccionado </th>
+                            <td mat-cell *matCellDef="let element; let i= index">
+                                <button *ngIf="element.bDDJJ===true" type="button"  mat-icon-button color="warm">
+                                    <mat-icon>done</mat-icon>
+                                </button>
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="opciones">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Opciones </th>
+                            <td mat-cell *matCellDef="let element; let i= index">
+                                <button type="button" (click)="delete2(i)" mat-icon-button color="warm">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </td>
+                        </ng-container>
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
+                    </table>
+                    <mat-toolbar>
+                        <mat-toolbar-row>
+                            <!--                 <button  mat-icon-button color="primary" aria-label="Descargar en formato PDF">
+                        <mat-icon svgIcon="heroicons_outline:download"></mat-icon>
+                     </button> -->
+                            <mat-paginator style="background-color: transparent;" [length]="data2.length"
+                                [pageSizeOptions]="[5]">
+                            </mat-paginator>
+                        </mat-toolbar-row>
+                    </mat-toolbar>
+                </div>
+            </div>
+        </form>
+    </mat-step>
+    <mat-step>
+        <form [formGroup]="thirdFormGroup">
+            <ng-template matStepLabel>Documentos adjuntos</ng-template>
+            <div class="grid lg:grid-cols-8 md:grid-cols-3 sm:grid-cols-3 gap-2">
+                <div class="xl:col-span-2 lg:col-span-2  md:col-span-3 sm:col-span-4 col-span-2">
+                    <mat-form-field class="w-full" appearance="outline">
+                        <mat-label>Tipo de Documento</mat-label>
+                        <mat-select
+                            [formControlName]="'cTipoDoc'">
+                            <mat-option *ngFor="let item of tipodocumentoadjunto" [value]="item.nConsValor">{{item.cConsDescripcion}}</mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="thirdFormGroup.get('cTipoDoc').hasError('required')">
+                           El tipo de documento es <b>requerido</b>.
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="lg:col-span-3">
+                    <mat-form-field class="w-full" appearance="outline">
+                        <mat-label>Descripcion</mat-label>
+                        <input #cDescripcion  id="cDescripcion"
+                            type="text" matInput placeholder="" formControlName="cDescripcion">
+                        <mat-error *ngIf="thirdFormGroup.get('cDescripcion').hasError('required')">
+                            La descripción del documento es <b>requerida</b>.
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            <div class="form-column lg:col-span-2" fxLayout="column"
+            fxLayout.md="row" fxLayout.lg="row" fxLayout.lt.xl="row" fxLayoutGap="15px">
+            <mat-form-field class="columns" appearance="outline">
+              <mat-label *ngIf="selectedFiles.length >0; else newFile"> {{fileName}}
+              </mat-label>
+              <ng-template #newFile>
+                <mat-label>Adjuntar archivo</mat-label>
+              </ng-template>
+              <input matInput readonly disabled />
+              <button type="button" mat-icon-button matSuffix (click)="fileInput.click()">
+                <mat-icon>attach_file</mat-icon>
+              </button>
+              <input formControlName="archivo"  hidden (change)="selectFiles($event)" #fileInput type="file" id="file"
+                accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+                <mat-error *ngIf="thirdFormGroup.get('archivo').hasError('required')">
+                    Porfavor subir un archivo ya que es <b>requerido</b>.
+                </mat-error>
+            </mat-form-field>
+          </div>
+          <div class="xl:col-span-1 lg:col-span-1 md:col-span-1 sm:col-span-1 col-span-1 d-flex justify-center align-center">
+            <button [disabled]="thirdFormGroup.invalid" (click)="agregardoc(thirdFormGroup)" mat-icon-button color="warn" class="mt-5" type="button">
+                <mat-icon>add</mat-icon>
+            </button>
+        </div>
+        </div>
+        <div class="grid xl:grid-cols-1 lg:grid-cols-1 md:grid-cols-1 sm:grid-cols-1 grid-cols-1" >
+            <div class="xl:col-span-1 lg:col-span-1 md:col-span-1 sm:col-span-1 col-span-1 mat-elevation-z8">
+                <table mat-table [dataSource]="dataSource3" matSort>
+
+                    <ng-container matColumnDef="tipodoc">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Tipo doc.</th>
+                        <td mat-cell *matCellDef="let element"> {{element.cTipoDoc}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="descripcion">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Descripción
+                        </th>
+                        <td mat-cell *matCellDef="let element"> {{element.cDescripcion}}
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="ver">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Ver </th>
+                        <td mat-cell *matCellDef="let element; let i= index">
+                            <button type="button" (click)="descargar(element.cAdjunto)" mat-icon-button color="warm">
+                                <mat-icon>book</mat-icon>
+                            </button>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="adjuntado">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Adjuntado por </th>
+                        <td mat-cell *matCellDef="let element"> {{element.cPersAdjunto}} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="opciones">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Opciones </th>
+                        <td mat-cell *matCellDef="let element; let i= index">
+                            <button type="button" (click)="deletedocument(i)" mat-icon-button color="warm">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns3"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns3;"></tr>
+                </table>
+                <mat-toolbar>
+                    <mat-toolbar-row>
+                        <!--                 <button  mat-icon-button color="primary" aria-label="Descargar en formato PDF">
+                    <mat-icon svgIcon="heroicons_outline:download"></mat-icon>
+                 </button> -->
+                        <mat-paginator style="background-color: transparent;" [length]="data.length"
+                            [pageSizeOptions]="[5]">
+                        </mat-paginator>
+                    </mat-toolbar-row>
+                </mat-toolbar>
+            </div>
+        </div>
+        </form>
+    </mat-step>
+    <mat-step [stepControl]="fourFormGroup">
+        <form [formGroup]="fourFormGroup">
+            <ng-template matStepLabel>Datos de cuenta de proveedor o contraparte</ng-template>
+            <div class="grid lg:grid-cols-9 md:grid-cols-3 sm:grid-cols-3 gap-2">
+                <div class="lg:col-span-3 md:col-span-1 sm:col-span-1">
+                    <mat-form-field class="w-full" appearance="outline">
+                        <mat-label>Usuario:</mat-label>
+                        <input readonly [disabled] #cUsuario DigitEnerotNumber id="cUsuario" minlength="{{longitudRuc}}"
+                            maxlength="{{longitudRuc}}" type="text" matInput placeholder="" formControlName="cUsuario">
+                        <mat-error *ngIf="fourFormGroup.get('cUsuario').hasError('required')">
+                               El usuario es <b>requerido</b>.
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="lg:col-span-3 md:col-span-1 sm:col-span-2">
+                    <mat-form-field class="w-full" appearance="outline">
+                        <mat-label>Contraseña:</mat-label>
+                        <input required matInput placeholder="Placeholder" pattern="[a-zA-Z]+[0-9]+" [maxlength]="20" [minlength]="8" formControlName="cContrasenia" (keyup)="validatePassword(fourFormGroup)" type="password" required>
+                        <mat-error *ngIf="fourFormGroup.get('cContrasenia').hasError('required')">
+                            La contraseña es <b>requerida</b>.
+                        </mat-error>
+                        <mat-error *ngIf="bPass === false">
+                                <strong>Ingresa una contraseña con el formato correcto, minimo <strong>{{8}} caracteres</strong> y almenos un número y una letra.</strong>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="lg:col-span-3 md:col-span-1 sm:col-span-2">
+                    <mat-form-field class="w-full" appearance="outline">
+                        <mat-label>Confirmar Contraseña:</mat-label>
+                        <input matInput placeholder="Placeholder" pattern="[a-zA-Z]+[0-9]+" [maxlength]="20" [minlength]="8" formControlName="cConfirmaContrasenia" (keyup)="validatePassword1(fourFormGroup)" type="password" required>
+                        <mat-error *ngIf="fourFormGroup.get('cConfirmaContrasenia').hasError('required')">
+                            Confirmar la contraseña es <b>requerida</b>.
+                        </mat-error>
+                        <mat-error *ngIf="bPass1 === false">
+                            <strong>Ingresa una contraseña con el formato correcto, minimo <strong>{{8}} caracteres</strong> y almenos un número y una letra.</strong>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="grid lg:grid-cols-9 md:grid-cols-1 sm:grid-cols-1 gap-2 grid-cols-1">
+                <div class="lg:col-span-7 md:col-span-1 sm:col-span-1 col-span-1">
+                    <ngx-recaptcha2 #captchaElem
+                    [siteKey]="siteKey"
+                    formControlName="recaptcha">
+                  </ngx-recaptcha2>
+                </div>
+                <div class="lg:col-span-2 md:col-span-1 sm:col-span-1 col-span-1 w-full">
+                    <mat-error  *ngIf="fourFormGroup.value.cContrasenia !== fourFormGroup.value.cConfirmaContrasenia">La Contraseñas no coinciden</mat-error >
+                </div>
+            </div>
+            <div class="grid lg:grid-cols-5 md:grid-cols-1 sm:grid-cols-1 grid-cols-1 gap-2 mt-2">
+                <div class=" lg:col-span-1 col-start-3 md:col-span-1 sm:col-span-1 col-span-1 justify-center align-center">
+                    <button mat-flat-button color="warn" (click)="guardarFormulario()">
+                        Guardar Todo
+                        <mat-icon>save</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </mat-step>
+</mat-stepper>
+<div class="col-span-1 w-full  align-center text-center">
+    <button mat-flat-button color="warn" type="button" matDialogClose>
+        Cancelar
+        <mat-icon>cancel</mat-icon>
+    </button>
+</div>

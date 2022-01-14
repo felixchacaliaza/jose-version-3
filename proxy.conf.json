@@ -1,0 +1,17 @@
+{
+    "/Proveedor":{
+        "target":"http://172.20.16.164:3000/api",
+        "secure":false,
+        "changeOrigin":true
+    },
+    "/usuarios":{
+        "target":"http://172.20.16.164:3000/api",
+        "secure":false,
+        "changeOrigin":true
+    },
+    "/Admin":{
+        "target":"http://172.20.16.164:3000/api",
+        "secure":false,
+        "changeOrigin":true
+    }
+}
